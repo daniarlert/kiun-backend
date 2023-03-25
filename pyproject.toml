@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "kiun"
+version = "0.1.0"
+description = ""
+authors = ["daniel <arlertdaniel@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.1.7"
+djangorestframework = "^3.14.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+pre-commit = "^3.2.0"
+commitizen = "^2.42.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
