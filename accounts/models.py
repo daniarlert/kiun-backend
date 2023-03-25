@@ -8,6 +8,7 @@ from .managers import CustomUserManager
 class CustomUser(AbstractUser):
     username = None  # Remove username field
     email = models.EmailField(_("email address"), unique=True)
+    about = models.TextField(_("about"), blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
