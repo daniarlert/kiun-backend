@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd party
+    "taggit",
     "rest_framework",
     # local
     "accounts",
     "projects",
+    "skills",
 ]
 
 MIDDLEWARE = [
