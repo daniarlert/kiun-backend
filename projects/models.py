@@ -1,4 +1,5 @@
 from django.db import models
+from taggit.managers import TaggableManager
 
 
 class Project(models.Model):
@@ -7,6 +8,7 @@ class Project(models.Model):
     url = models.URLField()
     image = models.ImageField(upload_to="media/projects")
     long_description = models.TextField()
+    tags = TaggableManager()
 
     def __str__(self):
         return self.title
