@@ -24,9 +24,6 @@ class CustomUser(AbstractUser):
 class SocialLink(models.Model):
     name = models.CharField(_("name"), max_length=100)
     url = models.URLField(_("url"))
-    user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="social_links", default=None
-    )
 
     def __str__(self):
         return self.name

@@ -13,9 +13,6 @@ class Achievement(models.Model):
         if self.end_date and self.start_date and self.start_date > self.end_date:
             raise ValidationError(_("End date must be greater than start date"))
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         abstract = True
 
@@ -24,7 +21,13 @@ class Titulation(Achievement):
     degree = models.CharField(max_length=255)
     institution = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.degree
+
 
 class Certification(Achievement):
     title = models.CharField(max_length=255)
     organization = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
