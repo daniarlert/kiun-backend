@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from .models import Skill
+from .serializers import SkillSerializer
+
+
+class SkillList(generics.ListAPIView):
+    queryset = Skill.objects.all()
+    serializer_class = SkillSerializer
+
+
+class SkillDetail(generics.RetrieveAPIView):
+    queryset = Skill.objects.all()
+    serializer_class = SkillSerializer
