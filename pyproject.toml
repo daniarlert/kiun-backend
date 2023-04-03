@@ -7,11 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "^4.1.7"
+django = ">=4.2.0"
 djangorestframework = "^3.14.0"
 pillow = "^9.4.0"
 django-taggit = "^3.1.0"
 django-cors-headers = "^3.14.0"
+psycopg = "^3.1.8"
 
 
 [tool.poetry.group.dev.dependencies]
