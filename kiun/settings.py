@@ -2,29 +2,50 @@
 Django settings for kiun project.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/4.1/topics/settings/
+https://docs.djangoproject.com/en/4.2/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/4.1/ref/settings/
+https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
 
+import environ
+
+# Set up environment variables
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+    SECRET_KEY=(
+        str,
+        "django-insecure-a63y$k_s^kej5!4%b53=b%vkj4zjxdrmkpj%8i^nn)kjz+kg4)",
+    ),
+    CORS_ORIGIN_WHILELIST=(
+        list,
+        [
+            "http://localhost:3000",
+            "http://localhost:8000",
+        ],
+    ),
+    CSRF_TRUSTED_ORIGINS=(list, []),
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Take environment variables from .env file
+environ.Env.read_env(env_file=BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-a63y$k_s^kej5!4%b53=b%vkj4zjxdrmkpj%8i^nn)kjz+kg4)"
+SECRET_KEY = env("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
+TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Application definition
 
@@ -64,14 +85,13 @@ ROOT_URLCONF = "kiun.urls"
 
 # CORS
 # https://github.com/adamchainz/django-cors-headers
-CORS_ORIGIN_WHILELIST = [
-    "http://localhost:3000",
-    "http://localhost:8000",
-]
+
+CORS_ORIGIN_WHILELIST = env("CORS_ORIGIN_WHILELIST")
 
 # CSRF
-# https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-trusted-origins
-CSRF_TRUSTED_ORIGINS = []
+# https://docs.djangoproject.com/en/4.2/ref/settings/#csrf-trusted-origins
+
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
 # Django REST Framework
 # https://www.django-rest-framework.org/api-guide/settings/
@@ -84,6 +104,7 @@ REST_FRAMEWORK = {
 
 # Whitenoise
 # https://whitenoise.readthedocs.io/en/stable/
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
@@ -112,18 +133,31 @@ WSGI_APPLICATION = "kiun.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME", default="postgres"),
+        "USER": env("DB_USER", default="postgres"),
+        "PASSWORD": env("DB_PASSWORD", default="postgres"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT", default=5432),
+    },
+}
+
+# Cache
+# https://docs.djangoproject.com/en/4.2/topics/cache/
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATIOn": env.cache("REDIS_URL"),
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -142,7 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
+# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
@@ -154,12 +188,12 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
