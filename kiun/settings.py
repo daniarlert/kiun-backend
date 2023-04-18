@@ -55,10 +55,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    # Whitenoise setup for development
-    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     # 3rd party
+    "storages",
     "taggit",
     "rest_framework",
     "corsheaders",
@@ -71,7 +70,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.cache.UpdateCacheMiddleware",
@@ -85,15 +83,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "kiun.urls"
 
+
 # CORS
 # https://github.com/adamchainz/django-cors-headers
 
 CORS_ORIGIN_WHILELIST = env("CORS_ORIGIN_WHILELIST")
 
+
 # CSRF
 # https://docs.djangoproject.com/en/4.2/ref/settings/#csrf-trusted-origins
 
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
+
 
 # Django REST Framework
 # https://www.django-rest-framework.org/api-guide/settings/
@@ -104,28 +105,35 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Whitenoise
-# https://whitenoise.readthedocs.io/en/stable/
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# Storage managed with `django-storages`
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
 
-# Storage
-# https://docs.djangoproject.com/en/4.2/ref/settings/#std:setting-STATICFILES_STORAGE
+# AWS settings
+AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID")
+AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_DEFAULT_ACL = env("AWS_DEFAULT_ACL")
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
+
+# S3 static settings
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+AWS_LOCATION = "static"
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-    },
-    "media": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-        "OPTIONS": {
-            "location": BASE_DIR / "media",
-        },
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
     },
 }
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 TEMPLATES = [
     {
@@ -153,12 +161,13 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": env("DB_NAME"),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT", default=5432),
+        "USER": env("POSTGRES_USER"),
+        "PASSWORD": env("POSTGRES_PASSWORD"),
+        "HOST": env("POSTGRES_DB"),
+        "PORT": env("POSTGRES_PORT"),
     },
 }
+
 
 # Cache
 # https://docs.djangoproject.com/en/4.2/topics/cache/
@@ -169,6 +178,7 @@ CACHES = {
         "LOCATION": env("REDIS_URL"),
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -200,11 +210,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
