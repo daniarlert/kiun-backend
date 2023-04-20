@@ -1,3 +1,13 @@
+FROM python:3.11.2-slim as base
+
+# Set virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install dependencies
+COPY requirements.prod.txt .
+RUN python -m pip install --upgrade pip && python -m pip install --upgrade -r requirements.prod.txt
+
 FROM python:3.11.2-slim
 
 # Set work directory
@@ -10,10 +20,14 @@ ENV PORT=8000
 
 EXPOSE $PORT
 
-# Install dependencies
-RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+# Copy dependencies
+COPY --from=base /opt/venv /opt/venv
+
+# Set path
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy project
 COPY . .
+
+# Run server
+CMD gunicorn --bind 0.0.0.0:${PORT} config.wsgi

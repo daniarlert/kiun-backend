@@ -1,0 +1,8 @@
+.env.example
+.gitignore
+.pre-commit-config.yaml
+requirements.txt
+CHANGELOG.md
+README.md
+poetry.lock
+pyproject.toml
