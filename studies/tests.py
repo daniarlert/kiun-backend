@@ -1,3 +1,4 @@
+import django_perf_rec
 from django.test import TestCase
 
 from .models import Certification, Titulation
@@ -16,6 +17,7 @@ class TitulationTests(TestCase):
     def test_titulation_creation(self):
         titulation = Titulation.objects.get(degree="Test degree")
 
+        self.assertIsNotNone(titulation)
         self.assertEqual(titulation.institution, "Test institution")
         self.assertEqual(titulation.description, "Test titulation description")
         self.assertEqual(titulation.start_date.strftime("%Y-%m-%d"), "2020-01-01")
@@ -32,6 +34,10 @@ class TitulationTests(TestCase):
 
         self.assertEqual(str(titulation), "Test degree")
 
+    def test_titulation_performance(self):
+        with django_perf_rec.record():
+            list(Titulation.objects.all())
+
 
 class CertificationTests(TestCase):
     def setUp(self) -> None:
@@ -46,6 +52,7 @@ class CertificationTests(TestCase):
     def test_certification_creation(self):
         certification = Certification.objects.get(title="Test certification")
 
+        self.assertIsNotNone(certification)
         self.assertEqual(certification.organization, "Test organization")
         self.assertEqual(certification.description, "Test certification description")
         self.assertEqual(certification.start_date.strftime("%Y-%m-%d"), "2020-01-01")
@@ -63,3 +70,7 @@ class CertificationTests(TestCase):
         certification = Certification.objects.get(title="Test certification")
 
         self.assertEqual(str(certification), "Test certification")
+
+    def test_certification_performance(self):
+        with django_perf_rec.record():
+            list(Certification.objects.all())

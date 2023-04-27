@@ -19,6 +19,7 @@ redis = "^4.5.4"
 hiredis = "^2.2.2"
 boto3 = "^1.26.109"
 django-storages = "^1.13.2"
+django-perf-rec = "^4.22.1"
 
 
 [tool.poetry.group.dev.dependencies]

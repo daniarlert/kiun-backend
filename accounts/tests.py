@@ -1,3 +1,4 @@
+import django_perf_rec
 from django.test import TestCase
 
 from .models import CustomUser, SocialLink
@@ -16,6 +17,7 @@ class UsersTests(TestCase):
     def test_user_creation(self):
         user = CustomUser.objects.get(email="john@doe.com")
 
+        self.assertIsNotNone(user)
         self.assertEqual(user.name, "John Doe")
         self.assertEqual(user.contact_email, "johncontact@doe.com")
         self.assertEqual(user.about, "John Doe is real.")
@@ -31,6 +33,10 @@ class UsersTests(TestCase):
 
         self.assertEqual(str(user), "john@doe.com")
 
+    def test_user_performance(self):
+        with django_perf_rec.record():
+            list(CustomUser.objects.all())
+
 
 class SocialLinkTests(TestCase):
     def setUp(self):
@@ -42,6 +48,7 @@ class SocialLinkTests(TestCase):
     def test_social_link_creation(self):
         social_link = SocialLink.objects.get(name="Test social link")
 
+        self.assertIsNotNone(social_link)
         self.assertEqual(social_link.url, "https://test.com")
 
     def test_social_link_deletion(self):
@@ -54,3 +61,7 @@ class SocialLinkTests(TestCase):
         social_link = SocialLink.objects.get(name="Test social link")
 
         self.assertEqual(str(social_link), "Test social link")
+
+    def test_social_link_performance(self):
+        with django_perf_rec.record():
+            list(SocialLink.objects.all())

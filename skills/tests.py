@@ -1,3 +1,4 @@
+import django_perf_rec
 from django.test import TestCase
 
 from .models import Skill
@@ -15,6 +16,7 @@ class SkillsTests(TestCase):
     def test_skill_creation(self):
         skill = Skill.objects.get(name="Test skill")
 
+        self.assertIsNotNone(skill)
         self.assertEqual(skill.description, "Test skill description")
 
     def test_skill_deletion(self):
@@ -36,3 +38,7 @@ class SkillsTests(TestCase):
         self.assertEqual(skill_tags.count(), 2)
         self.assertIn("test1", skill_tags.values_list("name", flat=True))
         self.assertIn("test2", skill_tags.values_list("name", flat=True))
+
+    def test_skill_performance(self):
+        with django_perf_rec.record():
+            list(Skill.objects.all())
